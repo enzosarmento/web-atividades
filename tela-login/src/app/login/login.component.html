@@ -1,0 +1,241 @@
+<!-- 
+  ESTRUTURA HTML MULTI-TELAS (LOGIN, CRIAR CONTA E ESQUECI A SENHA)
+-->
+
+<div class="login-wrapper">
+
+  <!-- ================================================================= -->
+  <!-- TELA 1: LOGIN                                                     -->
+  <!-- ================================================================= -->
+  <div *ngIf="telaAtual === 'login'" class="login-card">
+    
+    <div class="card-header">
+      <h2 class="card-title">Acessar Conta</h2>
+      <a href="#" class="btn-criar-conta" (click)="irParaTela('registro', $event)" title="Criar uma nova conta">
+        Criar conta
+      </a>
+    </div>
+
+    <form (ngSubmit)="fazerLogin()" class="login-form">
+      
+      <!-- Campo 1: E-mail -->
+      <div class="form-group">
+        <label for="emailInput" class="form-label">E-mail</label>
+        <div class="input-container">
+          <input 
+            type="email" 
+            id="emailInput" 
+            name="email"
+            class="form-control" 
+            placeholder="Digite seu e-mail..." 
+            [(ngModel)]="email" 
+            required
+            autocomplete="email"
+          />
+        </div>
+      </div>
+
+      <!-- Campo 2: Senha -->
+      <div class="form-group">
+        <label for="senhaInput" class="form-label">Senha</label>
+        <div class="input-container">
+          <input 
+            [type]="mostrarSenha ? 'text' : 'password'" 
+            id="senhaInput" 
+            name="senha"
+            class="form-control" 
+            placeholder="Digite sua senha..." 
+            [(ngModel)]="senha" 
+            required
+            autocomplete="current-password"
+          />
+          <button 
+            type="button" 
+            class="btn-toggle-password" 
+            (click)="toggleMostrarSenha()"
+            [title]="mostrarSenha ? 'Ocultar senha' : 'Exibir senha'"
+          >
+            {{ mostrarSenha ? 'Ocultar' : 'Mostrar' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Link "Esqueci a Senha" -->
+      <div class="forgot-password-container">
+        <a href="#" class="link-esqueci-senha" (click)="irParaTela('esqueci-senha', $event)">
+          Esqueci a Senha
+        </a>
+      </div>
+
+      <!-- Mensagem de Feedback -->
+      <div *ngIf="mensagemFeedback" class="feedback-alert" [ngClass]="tipoFeedback">
+        <span>{{ mensagemFeedback }}</span>
+      </div>
+
+      <!-- Botão Principal: ENTRAR -->
+      <div class="action-container">
+        <button type="submit" class="btn-entrar">
+          ENTRAR
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+
+  <!-- ================================================================= -->
+  <!-- TELA 2: CRIAR CONTA (REGISTRO)                                   -->
+  <!-- ================================================================= -->
+  <div *ngIf="telaAtual === 'registro'" class="login-card">
+    
+    <div class="card-header">
+      <h2 class="card-title">Criar Conta</h2>
+      <a href="#" class="btn-voltar-link" (click)="irParaTela('login', $event)">
+        ← Voltar ao Login
+      </a>
+    </div>
+
+    <form (ngSubmit)="cadastrarConta()" class="login-form">
+      
+      <!-- Campo: Nome Completo -->
+      <div class="form-group">
+        <label for="nomeRegistroInput" class="form-label">Nome Completo</label>
+        <div class="input-container">
+          <input 
+            type="text" 
+            id="nomeRegistroInput" 
+            name="nomeRegistro"
+            class="form-control" 
+            placeholder="Digite seu nome completo..." 
+            [(ngModel)]="nomeRegistro" 
+            required
+            autocomplete="name"
+          />
+        </div>
+      </div>
+
+      <!-- Campo: E-mail -->
+      <div class="form-group">
+        <label for="emailRegistroInput" class="form-label">E-mail</label>
+        <div class="input-container">
+          <input 
+            type="email" 
+            id="emailRegistroInput" 
+            name="emailRegistro"
+            class="form-control" 
+            placeholder="Digite seu e-mail..." 
+            [(ngModel)]="emailRegistro" 
+            required
+            autocomplete="email"
+          />
+        </div>
+      </div>
+
+      <!-- Campo: Senha -->
+      <div class="form-group">
+        <label for="senhaRegistroInput" class="form-label">Senha</label>
+        <div class="input-container">
+          <input 
+            [type]="mostrarSenha ? 'text' : 'password'" 
+            id="senhaRegistroInput" 
+            name="senhaRegistro"
+            class="form-control" 
+            placeholder="Crie uma senha..." 
+            [(ngModel)]="senhaRegistro" 
+            required
+            autocomplete="new-password"
+          />
+          <button 
+            type="button" 
+            class="btn-toggle-password" 
+            (click)="toggleMostrarSenha()"
+          >
+            {{ mostrarSenha ? 'Ocultar' : 'Mostrar' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Campo: Confirmar Senha -->
+      <div class="form-group">
+        <label for="confirmarSenhaInput" class="form-label">Confirmar Senha</label>
+        <div class="input-container">
+          <input 
+            [type]="mostrarSenha ? 'text' : 'password'" 
+            id="confirmarSenhaInput" 
+            name="confirmarSenhaRegistro"
+            class="form-control" 
+            placeholder="Confirme sua senha..." 
+            [(ngModel)]="confirmarSenhaRegistro" 
+            required
+            autocomplete="new-password"
+          />
+        </div>
+      </div>
+
+      <!-- Mensagem de Feedback -->
+      <div *ngIf="mensagemFeedback" class="feedback-alert" [ngClass]="tipoFeedback">
+        <span>{{ mensagemFeedback }}</span>
+      </div>
+
+      <!-- Botão Principal: CADASTRAR -->
+      <div class="action-container">
+        <button type="submit" class="btn-entrar btn-cadastrar">
+          CADASTRAR CONTA
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+
+  <!-- ================================================================= -->
+  <!-- TELA 3: ESQUECI A SENHA (RECUPERAÇÃO)                            -->
+  <!-- ================================================================= -->
+  <div *ngIf="telaAtual === 'esqueci-senha'" class="login-card">
+    
+    <div class="card-header">
+      <h2 class="card-title">Recuperar Senha</h2>
+      <a href="#" class="btn-voltar-link" (click)="irParaTela('login', $event)">
+        ← Voltar ao Login
+      </a>
+    </div>
+
+    <p class="subtitle-recuperacao">
+      Informe o seu e-mail cadastrado para redefinir sua senha.
+    </p>
+
+    <form (ngSubmit)="enviarRecuperacao()" class="login-form">
+      
+      <!-- Campo: E-mail para recuperação -->
+      <div class="form-group">
+        <label for="emailRecuperacaoInput" class="form-label">E-mail Cadastrado</label>
+        <div class="input-container">
+          <input 
+            type="email" 
+            id="emailRecuperacaoInput" 
+            name="emailRecuperacao"
+            class="form-control" 
+            placeholder="seu-email@exemplo.com" 
+            [(ngModel)]="emailRecuperacao" 
+            required
+            autocomplete="email"
+          />
+        </div>
+      </div>
+
+      <!-- Mensagem de Feedback -->
+      <div *ngIf="mensagemFeedback" class="feedback-alert" [ngClass]="tipoFeedback">
+        <span>{{ mensagemFeedback }}</span>
+      </div>
+
+      <!-- Botão Principal: ENVIAR INSTRUÇÕES -->
+      <div class="action-container">
+        <button type="submit" class="btn-entrar btn-recuperar">
+          ENVIAR INSTRUÇÕES
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+</div>
