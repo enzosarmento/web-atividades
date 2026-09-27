@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -10,6 +11,8 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
+  private authService = inject(AuthService);
+
   // Controle da tela ativa no momento
   telaAtual: 'login' | 'registro' | 'esqueci-senha' = 'login';
 
@@ -44,8 +47,6 @@ export class LoginComponent {
     if (tela === 'esqueci-senha' && this.email && !this.emailRecuperacao) {
       this.emailRecuperacao = this.email;
     }
-
-    console.log('Navegando para a tela:', tela);
   }
 
   /**
@@ -55,21 +56,22 @@ export class LoginComponent {
     if (!this.email || !this.senha) {
       this.tipoFeedback = 'erro';
       this.mensagemFeedback = 'Por favor, preencha o e-mail e a senha antes de entrar!';
-
-      console.warn('Tentativa de login com campos incompletos:', {
-        email: this.email,
-        senhaPreenchida: !!this.senha
-      });
       return;
     }
 
-    console.log('Dados do Login:', {
-      email: this.email,
-      senha: this.senha
+    this.authService.login(this.email, this.senha).subscribe({
+      next: (response) => {
+        localStorage.setItem('token', response.token);
+        this.tipoFeedback = 'sucesso';
+        this.mensagemFeedback = `Login efetuado com sucesso para: ${this.email}!`;
+        console.log('Token recebido:', response.token);
+      },
+      error: (err) => {
+        this.tipoFeedback = 'erro';
+        this.mensagemFeedback = err?.error?.message || 'E-mail ou senha inválidos.';
+        console.error('Erro no login:', err);
+      }
     });
-
-    this.tipoFeedback = 'sucesso';
-    this.mensagemFeedback = `Login efetuado com sucesso para: ${this.email}! (Dados impressos no console)`;
   }
 
   /**
@@ -79,31 +81,17 @@ export class LoginComponent {
     if (!this.nomeRegistro || !this.emailRegistro || !this.senhaRegistro || !this.confirmarSenhaRegistro) {
       this.tipoFeedback = 'erro';
       this.mensagemFeedback = 'Preencha todos os campos para realizar o cadastro!';
-
-      console.warn('Tentativa de cadastro com campos incompletos:', {
-        nome: this.nomeRegistro,
-        email: this.emailRegistro
-      });
       return;
     }
 
     if (this.senhaRegistro !== this.confirmarSenhaRegistro) {
       this.tipoFeedback = 'erro';
       this.mensagemFeedback = 'As senhas digitadas não coincidem. Verifique e tente novamente!';
-
-      console.warn('Cadastro não realizado: Senhas não coincidem');
       return;
     }
 
-    console.log('Dados do Cadastro:', {
-      nome: this.nomeRegistro,
-      email: this.emailRegistro,
-      senha: this.senhaRegistro,
-      confirmarSenha: this.confirmarSenhaRegistro
-    });
-
     this.tipoFeedback = 'sucesso';
-    this.mensagemFeedback = `Conta criada com sucesso para ${this.nomeRegistro}! (Dados impressos no console)`;
+    this.mensagemFeedback = `Conta criada com sucesso para ${this.nomeRegistro}! (esta funcionalidade ainda é simulada no frontend)`;
   }
 
   /**
@@ -113,17 +101,11 @@ export class LoginComponent {
     if (!this.emailRecuperacao) {
       this.tipoFeedback = 'erro';
       this.mensagemFeedback = 'Informe o seu e-mail cadastrado para recuperar a senha!';
-
-      console.warn('Tentativa de recuperação sem informar o e-mail');
       return;
     }
 
-    console.log('Solicitacao de Recuperacao de Senha:', {
-      emailRecuperacao: this.emailRecuperacao
-    });
-
     this.tipoFeedback = 'sucesso';
-    this.mensagemFeedback = `Link de redefinição de senha enviado para: ${this.emailRecuperacao}! (Dados impressos no console)`;
+    this.mensagemFeedback = `Link de redefinição de senha enviado para: ${this.emailRecuperacao}!`;
   }
 
   /**
